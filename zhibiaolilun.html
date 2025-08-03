@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 引入MathJax -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        @font-face {
+            font-family: 'Malabar';
+            src: local('Malabar'), url('https://your-font-url/Malabar.ttf') format('truetype');
+        }
+        
+        body {
+            font-family: 'Malabar', Arial, sans-serif;
+            color: #E9E9E9;
+            background-color: #0E1116;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 章节标题样式 */
+        .chapter-title {
+            color: #D26F57;
+            font-size: 24px;
+            border-left: 4px solid #D26F57;
+            padding-left: 15px;
+            margin: 40px 0 25px;
+            counter-increment: section;
+        }
+        .chapter-title:before {
+            content: counter(section) " ";
+        }
+
+        /* 正文段落 */
+        .method-description {
+            background-color: rgba(30, 30, 30, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 3px solid rgba(104, 162, 255, 0.5);
+        }
+
+        /* 强调段落 */
+        .highlight-box {
+            background-color: rgba(210, 111, 87, 0.1);
+            border: 1px solid rgba(210, 111, 87, 0.3);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 25px 0;
+        }
+
+        /* 关键词标记 */
+        .keyword {
+            color: #D26F57;
+            font-weight: bold;
+            cursor: help;
+            position: relative;
+        }
+        .keyword:hover:after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(14, 17, 22, 0.9);
+            color: #E9E9E9;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 250px;
+            border: 1px solid #D26F57;
+            z-index: 10;
+        }
+
+        /* 四链指标可视化 */
+        .dimension-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .dimension-card {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 8px;
+            padding: 15px;
+            border-top: 3px solid #68A2FF;
+        }
+        .dimension-card h4 {
+            color: #D26F57;
+            margin-top: 0;
+            border-bottom: 1px dashed rgba(210, 111, 87, 0.5);
+            padding-bottom: 8px;
+        }
+        .dimension-card ul {
+            padding-left: 20px;
+        }
+        .dimension-card li {
+            margin: 8px 0;
+            position: relative;
+        }
+        .dimension-card li:before {
+            content: "•";
+            color: #68A2FF;
+            position: absolute;
+            left: -15px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .dimension-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chapter-title">指标体系构建</div>
+
+    <div class="method-description">
+        <p>参照<span class="keyword" data-tooltip="狄乾斌, 等. 中国海洋经济高质量发展评价指标体系构建[J]. 资源科学, 2021.">狄乾斌的指标体系</span>构建渔业高质量发展评价指标体系，包含<strong>创新链、价值链、供应链和空间链</strong>四个维度共20个指标。</p>
+    </div>
+
+    <div class="highlight-box">
+        <h4>维度构建原则：</h4>
+        <p>由于数据获取限制，创新链和供应链维度指标较少。为避免指标数量差异导致四链影响程度偏差：</p>
+        <ol>
+            <li>对四链分别设置<strong>总权重阈值</strong></li>
+            <li>通过试验确定<strong>调整系数</strong>（兼顾权重合理性与结果显著性）</li>
+            <li>采用<span class="keyword" data-tooltip="通过改变关键参数观察结果波动的分析方法">敏感性分析</span>验证权重分配稳健性</li>
+        </ol>
+    </div>
+
+    <div class="dimension-container">
+        <!-- 创新链 -->
+        <div class="dimension-card">
+            <h4>创新链（2个二级指标）</h4>
+            <ul>
+                <li><strong>创新投入</strong>：水产推广机构数量等</li>
+                <li><strong>创新产出</strong>：技术专利数量等</li>
+            </ul>
+        </div>
+
+        <!-- 价值链 -->
+        <div class="dimension-card" style="border-top-color: #D26F57;">
+            <h4>价值链（3个视角6指标）</h4>
+            <ul>
+                <li><strong>经济发展贡献</strong>：渔业产值等</li>
+                <li><strong>对外贸易情况</strong>：远洋渔业占比等</li>
+                <li><strong>社会价值</strong>：渔民收入等</li>
+            </ul>
+        </div>
+
+        <!-- 供应链 -->
+        <div class="dimension-card" style="border-top-color: #6BFF6B;">
+            <h4>供应链（3个视角4指标）</h4>
+            <ul>
+                <li><strong>劳动生产能力</strong>：劳动生产率</li>
+                <li><strong>仓储与吞吐能力</strong>：冷库数量</li>
+                <li><strong>产品供给能力</strong>：人均产量等</li>
+            </ul>
+        </div>
+
+        <!-- 空间链 -->
+        <div class="dimension-card" style="border-top-color: #FF6BFF;">
+            <h4>空间链（3个视角8指标）</h4>
+            <ul>
+                <li><strong>地方专业化水平</strong>：区位熵等</li>
+                <li><strong>产业成长度</strong>：加工量占比等</li>
+                <li><strong>产业竞争力</strong>：单位生产率等</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="method-description">
+        <h4>权重分配方法论：</h4>
+        <p>采用<span class="keyword" data-tooltip="通过信息熵计算指标客观权重的数学方法">熵权法</span>计算基础权重后，引入维度平衡系数：</p>
+        \[ 
+        w_{adjusted} = w_{original} \times \alpha \quad (\alpha \text{为调整系数})
+        \]
+        <p>最终通过蒙特卡洛模拟验证权重敏感性，确保评价结果稳健可靠。</p>
+    </div>
+</body>
+</html>
