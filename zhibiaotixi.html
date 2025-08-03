@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 引入MathJax用于渲染公式标记 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        @font-face {
+            font-family: 'Malabar';
+            src: local('Malabar'), url('https://your-font-url/Malabar.ttf') format('truetype');
+        }
+        
+        body {
+            font-family: 'Malabar', Arial, sans-serif;
+            color: #E9E9E9;
+            background-color: #0E1116;
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 标题样式（与之前论文风格一致） */
+        .table-caption {
+            color: #D26F57;
+            font-size: 22px;
+            text-align: center;
+            margin: 30px 0 15px;
+            letter-spacing: 1px;
+        }
+
+        /* 表格容器 */
+        .indicator-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: rgba(30, 30, 30, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 表头样式 */
+        .indicator-table th {
+            background-color: rgba(210, 111, 87, 0.2);
+            color: #D26F57;
+            padding: 14px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 2px solid #D26F57;
+            position: sticky;
+            top: 0;
+        }
+
+        /* 表格单元格 */
+        .indicator-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(233, 233, 233, 0.1);
+            text-align: center;
+        }
+
+        /* 隔行变色效果 */
+        .indicator-table tr:nth-child(even) {
+            background-color: rgba(233, 233, 233, 0.05);
+        }
+
+        /* 悬停效果 */
+        .indicator-table tr:hover td {
+            background-color: rgba(104, 162, 255, 0.15);
+        }
+
+        /* 属性标记 */
+        .positive-indicator {
+            color: #68A2FF;
+            font-weight: bold;
+        }
+        
+        /* 脚注标记 */
+        .footnote-mark {
+            vertical-align: super;
+            font-size: 0.8em;
+            color: #D26F57;
+        }
+
+        /* 响应式处理 */
+        @media (max-width: 768px) {
+            .indicator-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="table-caption">表1：渔业高质量发展评价指标体系</div>
+
+    <table class="indicator-table">
+        <thead>
+            <tr>
+                <th>一级指标<sup class="footnote-mark">1</sup></th>
+                <th>二级指标<sup class="footnote-mark">2</sup></th>
+                <th>三级指标<sup class="footnote-mark">3</sup></th>
+                <th>属性<sup class="footnote-mark">4</sup></th>
+                <th>单位<sup class="footnote-mark">5</sup></th>
+                <th>权重<sup class="footnote-mark">6</sup></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 创新链水平 -->
+            <tr>
+                <td rowspan="3">创新链水平<sup class="footnote-mark">1</sup></td>
+                <td>创新投入<sup class="footnote-mark">1</sup></td>
+                <td>水产推广机构数量 (X1)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>个</td>
+                <td>0.08</td>
+            </tr>
+            <tr>
+                <td>创新产出<sup class="footnote-mark">1</sup></td>
+                <td>水产技术推广机构获得专利 (X2)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>项</td>
+                <td>0.12</td>
+            </tr>
+            <tr>
+                <td>经济发展贡献<sup class="footnote-mark">1</sup></td>
+                <td>渔业产值 (X3)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>万元</td>
+                <td>0.04</td>
+            </tr>
+
+            <!-- 价值链水平 -->
+            <tr>
+                <td rowspan="3">价值链水平<sup class="footnote-mark">1</sup></td>
+                <td>对外贸易情况<sup class="footnote-mark">1</sup></td>
+                <td>远洋渔业产值占比 (X5)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>%</td>
+                <td>0.03</td>
+            </tr>
+            <tr>
+                <td>社会价值<sup class="footnote-mark">1</sup></td>
+                <td>渔民人均纯收入 (X7)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>万美元</td>
+                <td>0.05</td>
+            </tr>
+            <tr>
+                <td>劳动生产能力<sup class="footnote-mark">1</sup></td>
+                <td>渔业劳动生产率 (X9)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>万元/人</td>
+                <td>0.02</td>
+            </tr>
+
+            <!-- 供应链水平 -->
+            <tr>
+                <td rowspan="3">供应链水平<sup class="footnote-mark">1</sup></td>
+                <td>仓储&amp;吞吐能力<sup class="footnote-mark">1</sup></td>
+                <td>水产品冷库数量 (X10)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>座</td>
+                <td>0.07</td>
+            </tr>
+            <tr>
+                <td>产品供给能力<sup class="footnote-mark">1</sup></td>
+                <td>人均渔产品量 (X11)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>吨/万人</td>
+                <td>0.03</td>
+            </tr>
+            <tr>
+                <td>地方专业化水平<sup class="footnote-mark">1</sup></td>
+                <td>渔业养殖面积 (X12)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>公顷</td>
+                <td>0.03</td>
+            </tr>
+
+            <!-- 空间链水平 -->
+            <tr>
+                <td rowspan="5">空间链水平<sup class="footnote-mark">1</sup></td>
+                <td>渔业专业从业人员占比 (X14)<sup class="footnote-mark">1</sup></td>
+                <td></td>
+                <td class="positive-indicator">+</td>
+                <td>%</td>
+                <td>0.02</td>
+            </tr>
+            <tr>
+                <td>传统渔民占渔民比重 (X15)<sup class="footnote-mark">1</sup></td>
+                <td></td>
+                <td class="positive-indicator">+</td>
+                <td>%</td>
+                <td>0.05</td>
+            </tr>
+            <tr>
+                <td>产业成长度<sup class="footnote-mark">1</sup></td>
+                <td>水产品加工量占产量比重 (X16)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>%</td>
+                <td>0.04</td>
+            </tr>
+            <tr>
+                <td>产业竞争力<sup class="footnote-mark">1</sup></td>
+                <td>渔业加工产值占比 (X17)<sup class="footnote-mark">1</sup></td>
+                <td class="positive-indicator">+</td>
+                <td>%</td>
+                <td>0.02</td>
+            </tr>
+            <tr>
+                <td>养殖单位面积生产率 (X19)<sup class="footnote-mark">1</sup></td>
+                <td></td>
+                <td class="positive-indicator">+</td>
+                <td>%</td>
+                <td>0.07</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>远洋渔船总功率 (X20)<sup class="footnote-mark">1</sup></td>
+                <td></td>
+                <td class="positive-indicator">+</td>
+                <td>吨</td>
+                <td>0.05</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- 脚注说明 -->
+    <div style="color: rgba(233, 233, 233, 0.7); font-size: 14px; margin-top: 30px;">
+        <sup>1</sup> 指标说明：<br>
+        <sup>1</sup> 正属性(+)表示指标数值越大代表发展水平越高<br>
+        <sup>2</sup> 权重值通过熵权法计算得出
+    </div>
+</body>
+</html>
