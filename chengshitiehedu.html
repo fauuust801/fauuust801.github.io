@@ -2,44 +2,62 @@
 <html>
 <head>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            color: #333;
-            background-color: white;
+        @font-face {
+            font-family: 'Malabar';
+            src: local('Malabar'), url('https://your-font-url/Malabar.ttf') format('truetype');
         }
         
-        @media (prefers-color-scheme: dark) {
-            body {
-                color: #e0e0e0;
-                background-color: #121212;
-            }
-            table {
-                border-color: #444;
-            }
+        body {
+            font-family: 'Malabar', Arial, sans-serif;
+            margin: 20px;
+            color: #E9E9E9;
+            background-color: #0E1116;
+            font-size: 16px; /* 可根据需要调整 */
         }
 
         table {
             border-collapse: collapse;
             width: 100%;
-            border: 1px solid #ddd;
+            border: 1px solid #E9E9E9;
+            background-color: #0E1116;
         }
 
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border: 1px solid #E9E9E9;
+            padding: 12px;
             text-align: center;
+            position: relative;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #0E1116;
             font-weight: bold;
+            color: #D26F57; /* 强调色用于表头 */
         }
-        
-        @media (prefers-color-scheme: dark) {
-            th {
-                background-color: #1e1e1e;
-            }
+
+        /* 行悬停效果 */
+        tr:hover td {
+            background-color: rgba(104, 162, 255, 0.3) !important;
+        }
+
+        /* 列悬停效果 */
+        td:hover::after,
+        th:hover::after {
+            content: "";
+            position: absolute;
+            background-color: rgba(104, 162, 255, 0.3);
+            top: 0;
+            bottom: 0;
+            width: 100%;
+            left: 0;
+            z-index: -1;
+        }
+
+        /* 当前单元格高亮 */
+        td:hover {
+            background-color: #68A2FF !important;
+            color: #0E1116;
+            font-weight: bold;
         }
     </style>
 </head>
