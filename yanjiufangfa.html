@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 1. 添加MathJax数学公式支持 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                renderActions: {
+                    addMenu: []
+                }
+            }
+        };
+    </script>
+
+    <style>
+        @font-face {
+            font-family: 'Malabar';
+            src: local('Malabar'), url('https://your-font-url/Malabar.ttf') format('truetype');
+        }
+        
+        body {
+            font-family: 'Malabar', Arial, sans-serif;
+            color: #E9E9E9;
+            background-color: #0E1116;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 章节标题样式 (原版保留) */
+        .chapter-title {
+            color: #D26F57;
+            font-size: 24px;
+            border-left: 4px solid #D26F57;
+            padding-left: 15px;
+            margin: 30px 0 20px;
+        }
+
+        /* 子标题样式 (原版保留) */
+        .section-title {
+            color: #E9E9E9;
+            font-size: 20px;
+            margin: 25px 0 15px;
+            position: relative;
+            padding-bottom: 8px;
+        }
+        .section-title:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: rgba(210, 111, 87, 0.5);
+        }
+
+        /* 方法卡片容器 (原版保留) */
+        .method-card {
+            background-color: rgba(30, 30, 30, 0.5);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(233, 233, 233, 0.1);
+            transition: all 0.3s ease;
+        }
+        .method-card:hover {
+            border-color: rgba(210, 111, 87, 0.3);
+            box-shadow: 0 5px 15px rgba(210, 111, 87, 0.1);
+        }
+
+        /* 公式高亮样式 (优化版) */
+        .formula {
+            background-color: rgba(104, 162, 255, 0.1);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            border-left: 3px solid #68A2FF;
+            overflow-x: auto;
+        }
+        .formula:hover {
+            background-color: rgba(104, 162, 255, 0.2);
+        }
+
+        /* 关键词标记 (原版保留) */
+        .keyword {
+            color: #D26F57;
+            font-weight: bold;
+            cursor: help;
+            position: relative;
+        }
+        .keyword:hover:after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(14, 17, 22, 0.9);
+            color: #E9E9E9;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+            border: 1px solid #D26F57;
+            z-index: 10;
+        }
+
+        /* 流程图示 (原版保留) */
+        .process-step {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .process-step:hover {
+            background: rgba(210, 111, 87, 0.1);
+        }
+        .step-number {
+            background: #D26F57;
+            color: #0E1116;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+
+        /* 数学公式特殊优化 */
+        .mjx-chtml {
+            color: #E9E9E9 !important;
+            font-size: 1.05em;
+        }
+        .formula .mjx-chtml[display="true"] {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="chapter-title">3 研究方法与指标体系构建</div>
+
+    <div class="section-title">3.1 研究方法</div>
+
+    <!-- 熵权TOPSIS法卡片 (原版内容+公式渲染) -->
+    <div class="method-card">
+        <h3>3.1.1 <span class="keyword" data-tooltip="结合熵值法确定权重与TOPSIS法的综合评价方法">熵权TOPSIS法</span></h3>
+        
+        <div class="process-step">
+            <div class="step-number">1</div>
+            <div>构建原始数据矩阵（n个评价对象 × m个指标）</div>
+        </div>
+        
+        <div class="process-step">
+            <div class="step-number">2</div>
+            <div>数据标准化处理得到矩阵 <i>N = [n<sub>ij</sub>]<sub>n×m</sub></i></div>
+        </div>
+        
+        <div class="formula">
+            评价对象到正理想点距离：
+            \[ D_i^+ = \sqrt{\sum_{j=1}^m (Z_{ij} - Z^+)^2 } \]
+        </div>
+        
+        <div class="formula">
+            评价对象到负理想点距离：
+            \[ D_i^- = \sqrt{\sum_{j=1}^m (Z_{ij} - Z^-)^2 } \]
+        </div>
+        
+        <div class="formula" style="border-left-color: #D26F57;">
+            相对贴合度计算（核心指标）：
+            \[ C_t = \frac{D_i^+}{D_i^+ + D_i^-} \]
+            <div style="color: #E9E9E9; font-size: 14px; margin-top: 8px;">
+                <span class="keyword" data-tooltip="值域[0,1]，越接近1表示质量水平越高">相对贴合度</span>衡量地区渔业资源利用效率、政策执行效果及产业协调性
+            </div>
+        </div>
+    </div>
+
+    <!-- 标准差与变异系数卡片 (原版内容+公式渲染) -->
+    <div class="method-card">
+        <h3>3.1.2 <span class="keyword" data-tooltip="反映数据离散程度的统计量">标准差与变异系数</span></h3>
+        
+        <div class="formula">
+            标准差计算：
+            \[ s_t = \sqrt{\frac{\sum_{i=1}^n (C_{ti})^2}{n}} \]
+        </div>
+        
+        <div class="formula" style="border-left-color: #D26F57;">
+            变异系数计算（离散度指标）：
+            \[ CV_t = \frac{s_t}{C_t} \]
+            <div style="color: #E9E9E9; font-size: 14px; margin-top: 8px;">
+                其中 <i>C<sub>ti</sub></i> 表示第 <i>i</i> 地区第 <i>t</i> 年的渔业高质量发展指数值
+            </div>
+        </div>
+        
+        <p style="margin-top: 15px;">
+            <span class="keyword" data-tooltip="数值越大表示地区差异越显著">离散程度分析</span>：
+            标准差与变异系数可用于分析不同地市渔业高质量发展水平的差异变化情况
+        </p>
+    </div>
+
+    <!-- 隐藏的预加载公式 (确保MathJax优先处理) -->
+    <div style="display: none;">
+        \( \sqrt{} \sum \) <!-- 预加载常用符号 -->
+    </div>
+</body>
+</html>
