@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>渔业产业链高质量发展分析</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+        
+        :root {
+            --bg-color: #0E1116;
+            --text-color: #E9E9E9;
+            --accent-color: #D26F57;
+            --hover-color: #68A2FF;
+            --row-hover: rgba(104, 162, 255, 0.3);
+            --cell-hover: #68A2FF;
+            --padding: 12px;
+            --chain-innovation: #FF7E79;
+            --chain-value: #A5DE37;
+            --chain-supply: #4DB8FF;
+            --chain-space: #C792EA;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: var(--accent-color);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            border-left: 4px solid var(--accent-color);
+            padding-left: 15px;
+            margin-top: 40px;
+        }
+        
+        .concept-map {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .chain-card {
+            background-color: rgba(233, 233, 233, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            border-top: 4px solid;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .chain-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .chain-card.innovation {
+            border-color: var(--chain-innovation);
+        }
+        
+        .chain-card.value {
+            border-color: var(--chain-value);
+        }
+        
+        .chain-card.supply {
+            border-color: var(--chain-supply);
+        }
+        
+        .chain-card.space {
+            border-color: var(--chain-space);
+        }
+        
+        .chain-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chain-card h3::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .innovation h3::before {
+            background-color: var(--chain-innovation);
+        }
+        
+        .value h3::before {
+            background-color: var(--chain-value);
+        }
+        
+        .supply h3::before {
+            background-color: var(--chain-supply);
+        }
+        
+        .space h3::before {
+            background-color: var(--chain-space);
+        }
+        
+        .interactive-diagram {
+            width: 100%;
+            height: 500px;
+            background-color: rgba(233, 233, 233, 0.05);
+            border-radius: 8px;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chain-node {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        
+        .chain-node:hover {
+            transform: scale(1.1);
+            z-index: 2;
+        }
+        
+        .node-innovation {
+            background-color: var(--chain-innovation);
+            top: 20%;
+            left: 20%;
+        }
+        
+        .node-value {
+            background-color: var(--chain-value);
+            top: 20%;
+            right: 20%;
+        }
+        
+        .node-supply {
+            background-color: var(--chain-supply);
+            bottom: 20%;
+            left: 20%;
+        }
+        
+        .node-space {
+            background-color: var(--chain-space);
+            bottom: 20%;
+            right: 20%;
+        }
+        
+        .node-center {
+            background-color: var(--accent-color);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            font-size: 1.2em;
+        }
+        
+        .connection-line {
+            position: absolute;
+            background-color: rgba(233, 233, 233, 0.3);
+            transform-origin: 0 0;
+            z-index: 0;
+        }
+        
+        .connection-line:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .chain-details {
+            background-color: rgba(233, 233, 233, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid;
+            display: none;
+        }
+        
+        .chain-details.visible {
+            display: block;
+        }
+        
+        .chain-details.innovation {
+            border-color: var(--chain-innovation);
+        }
+        
+        .chain-details.value {
+            border-color: var(--chain-value);
+        }
+        
+        .chain-details.supply {
+            border-color: var(--chain-supply);
+        }
+        
+        .chain-details.space {
+            border-color: var(--chain-space);
+        }
+        
+        .optimization-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .optimization-item {
+            background-color: rgba(233, 233, 233, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .optimization-item:hover {
+            background-color: rgba(104, 162, 255, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .interactive-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+        
+        .interactive-table th {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: var(--padding);
+            text-align: left;
+        }
+        
+        .interactive-table td {
+            padding: var(--padding);
+            border-bottom: 1px solid rgba(233, 233, 233, 0.2);
+        }
+        
+        .interactive-table tr:hover {
+            background-color: var(--row-hover);
+        }
+        
+        .interactive-table td:hover {
+            background-color: var(--cell-hover);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .concept-map {
+                grid-template-columns: 1fr;
+            }
+            
+            .interactive-diagram {
+                height: 400px;
+            }
+            
+            .chain-node {
+                width: 80px;
+                height: 80px;
+                font-size: 0.8em;
+            }
+            
+            .node-center {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>渔业产业链高质量发展分析</h1>
+        
+        <section>
+            <h2>理论分析</h2>
+            <p>高质量发展内涵丰富，从产业链视角来看，主要体现在几个方面：创新驱动发展促进渔业转型升级和区域产业集聚，实现产业链优化；其次延长产业链，并提高产业链韧性；以及合理布局产业结构，优化资源配置以实现空间效益最大化。最后，实现创新链、价值链、供应链与空间链相互作用，紧密衔接，要素在各链流通，有序运行推进经济高质量发展。</p>
+            
+            <div class="concept-map">
+                <div class="chain-card innovation" onclick="showDetails('innovation')">
+                    <h3>创新链</h3>
+                    <p>实现海洋渔业高质量发展的核心动力，包括技术创新、知识转化和产业升级。</p>
+                </div>
+                
+                <div class="chain-card value" onclick="showDetails('value')">
+                    <h3>价值链</h3>
+                    <p>反映海洋渔业的经济效益和社会贡献，包括价值创造、分配和国际化水平。</p>
+                </div>
+                
+                <div class="chain-card supply" onclick="showDetails('supply')">
+                    <h3>供应链</h3>
+                    <p>保障渔业稳定运行的基础，涵盖资源供给、物流效率和仓储能力。</p>
+                </div>
+                
+                <div class="chain-card space" onclick="showDetails('space')">
+                    <h3>空间链</h3>
+                    <p>产业链条在不同地区之间的分布，分为全球链、国家链和地区链。</p>
+                </div>
+            </div>
+            
+            <div class="interactive-diagram" id="chainDiagram">
+                <div class="chain-node node-innovation" onclick="showDetails('innovation')">创新链<br>转型升级</div>
+                <div class="chain-node node-value" onclick="showDetails('value')">价值链<br>经济效益</div>
+                <div class="chain-node node-supply" onclick="showDetails('supply')">供应链<br>稳定运行</div>
+                <div class="chain-node node-space" onclick="showDetails('space')">空间链<br>区域分布</div>
+                <div class="chain-node node-center">渔业产业链<br>高质量发展</div>
+            </div>
+            
+            <div id="innovationDetails" class="chain-details innovation">
+                <h3>创新链分析</h3>
+                <p>创新链是实现海洋渔业高质量发展的核心动力，其内涵包括技术创新、知识转化和产业升级。创新链通过整合科研机构、企业和政府的资源，形成从基础研究到技术应用的完整链条。</p>
+                <ul>
+                    <li>技术创新：新品种培育、养殖技术改进</li>
+                    <li>知识转化：科研成果产业化</li>
+                    <li>产业升级：传统渔业向现代化转型</li>
+                </ul>
+            </div>
+            
+            <div id="valueDetails" class="chain-details value">
+                <h3>价值链分析</h3>
+                <p>价值链由哈佛商学院教授迈克尔·波特在1985年提出的，描述了企业如何通过一系列增值环节和活动（如研发、生产、营销、服务）创造利润。能反映了海洋渔业的经济效益和社会贡献。</p>
+                <ul>
+                    <li>价值创造：提高产品附加值</li>
+                    <li>价值分配：产业链各环节利益分配</li>
+                    <li>国际化水平：参与全球市场竞争</li>
+                </ul>
+            </div>
+            
+            <div id="supplyDetails" class="chain-details supply">
+                <h3>供应链分析</h3>
+                <p>供应链是保障渔业稳定运行的基础，其内涵涵盖资源供给、物流效率和仓储能力。供应链的高效运作能够降低交易成本，提高产品附加值。</p>
+                <ul>
+                    <li>资源供给：种苗、饲料等投入品供应</li>
+                    <li>物流效率：冷链物流体系建设</li>
+                    <li>仓储能力：产品保鲜与库存管理</li>
+                </ul>
+            </div>
+            
+            <div id="spaceDetails" class="chain-details space">
+                <h3>空间链分析</h3>
+                <p>空间链指同种产业链条在不同地区之间的分布，可按地区分为全球链、国家链和地区链。本文指福建地区链。</p>
+                <ul>
+                    <li>全球链：远洋渔业国际合作</li>
+                    <li>国家链：国内区域分工协作</li>
+                    <li>地区链：福建省内产业布局</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section>
+            <h2>产业链优化路径</h2>
+            <div class="optimization-list">
+                <div class="optimization-item">
+                    <h4>合理布局</h4>
+                    <p>优化产业空间分布，形成区域集聚效应</p>
+                </div>
+                <div class="optimization-item">
+                    <h4>优化资源配置</h4>
+                    <p>提高生产要素使用效率，降低浪费</p>
+                </div>
+                <div class="optimization-item">
+                    <h4>紧密连接</h4>
+                    <p>加强产业链各环节协同合作</p>
+                </div>
+                <div class="optimization-item">
+                    <h4>升级转型</h4>
+                    <p>推动传统渔业向现代化、智能化发展</p>
+                </div>
+                <div class="optimization-item">
+                    <h4>延长产业链</h4>
+                    <p>发展精深加工，提高产品附加值</p>
+                </div>
+                <div class="optimization-item">
+                    <h4>区域产业集聚</h4>
+                    <p>形成产业集群，发挥规模效应</p>
+                </div>
+            </div>
+            
+            <h3>四链相互作用关系</h3>
+            <table class="interactive-table">
+                <thead>
+                    <tr>
+                        <th>链条</th>
+                        <th>作用</th>
+                        <th>优化方向</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>创新链</td>
+                        <td>驱动产业升级</td>
+                        <td>加强产学研合作</td>
+                    </tr>
+                    <tr>
+                        <td>价值链</td>
+                        <td>提升经济效益</td>
+                        <td>发展高附加值产品</td>
+                    </tr>
+                    <tr>
+                        <td>供应链</td>
+                        <td>保障稳定运行</td>
+                        <td>完善冷链物流</td>
+                    </tr>
+                    <tr>
+                        <td>空间链</td>
+                        <td>优化区域布局</td>
+                        <td>形成产业集群</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+    
+    <script>
+        // 绘制连接线
+        function drawConnections() {
+            const diagram = document.getElementById('chainDiagram');
+            const center = diagram.querySelector('.node-center');
+            const nodes = diagram.querySelectorAll('.chain-node:not(.node-center)');
+            
+            // 清除现有连接线
+            diagram.querySelectorAll('.connection-line').forEach(line => line.remove());
+            
+            // 获取中心节点位置
+            const centerRect = center.getBoundingClientRect();
+            const centerX = centerRect.left + centerRect.width/2 - diagram.getBoundingClientRect().left;
+            const centerY = centerRect.top + centerRect.height/2 - diagram.getBoundingClientRect().top;
+            
+            // 为每个节点创建连接线
+            nodes.forEach(node => {
+                const nodeRect = node.getBoundingClientRect();
+                const nodeX = nodeRect.left + nodeRect.width/2 - diagram.getBoundingClientRect().left;
+                const nodeY = nodeRect.top + nodeRect.height/2 - diagram.getBoundingClientRect().top;
+                
+                // 计算线的长度和角度
+                const length = Math.sqrt(Math.pow(nodeX - centerX, 2) + Math.pow(nodeY - centerY, 2));
+                const angle = Math.atan2(nodeY - centerY, nodeX - centerX) * 180 / Math.PI;
+                
+                // 创建线元素
+                const line = document.createElement('div');
+                line.className = 'connection-line';
+                line.style.width = `${length}px`;
+                line.style.height = '2px';
+                line.style.left = `${centerX}px`;
+                line.style.top = `${centerY}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                
+                diagram.appendChild(line);
+            });
+        }
+        
+        // 显示详细信息
+        function showDetails(chain) {
+            // 隐藏所有详情
+            document.querySelectorAll('.chain-details').forEach(detail => {
+                detail.classList.remove('visible');
+            });
+            
+            // 显示选中的详情
+            document.getElementById(`${chain}Details`).classList.add('visible');
+            
+            // 高亮对应的节点
+            document.querySelectorAll('.chain-node').forEach(node => {
+                node.style.boxShadow = 'none';
+            });
+            document.querySelector(`.node-${chain}`).style.boxShadow = `0 0 15px 5px ${getChainColor(chain)}`;
+        }
+        
+        function getChainColor(chain) {
+            switch(chain) {
+                case 'innovation': return 'var(--chain-innovation)';
+                case 'value': return 'var(--chain-value)';
+                case 'supply': return 'var(--chain-supply)';
+                case 'space': return 'var(--chain-space)';
+                default: return 'var(--accent-color)';
+            }
+        }
+        
+        // 初始化
+        window.addEventListener('load', () => {
+            drawConnections();
+            showDetails('innovation'); // 默认显示创新链
+            
+            // 响应窗口大小变化
+            window.addEventListener('resize', drawConnections);
+        });
+    </script>
+</body>
+</html>
