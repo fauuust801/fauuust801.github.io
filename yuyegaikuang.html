@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>福建省渔业发展概况</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+        
+        :root {
+            --bg-color: #0E1116;
+            --text-color: #E9E9E9;
+            --accent-color: #D26F57;
+            --hover-color: #68A2FF;
+            --row-hover: rgba(104, 162, 255, 0.3);
+            --cell-hover: #68A2FF;
+            --padding: 12px;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+        
+        .intro {
+            background-color: rgba(210, 111, 87, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .data-card {
+            background-color: rgba(233, 233, 233, 0.05);
+            border: 1px solid rgba(233, 233, 233, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .data-card:hover {
+            border-color: var(--hover-color);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .data-card h3 {
+            color: var(--accent-color);
+            margin-top: 0;
+        }
+        
+        .data-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--hover-color);
+        }
+        
+        .data-card .unit {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .interactive-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .interactive-table th {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: var(--padding);
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+        
+        .interactive-table td {
+            padding: var(--padding);
+            border-bottom: 1px solid rgba(233, 233, 233, 0.2);
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        /* 优化后的列悬停效果 - 修复文字重叠问题 */
+        .interactive-table tbody {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .interactive-table tbody tr:hover {
+            background-color: var(--row-hover);
+        }
+        
+        .interactive-table tbody td:hover {
+            background-color: var(--cell-hover);
+            color: var(--bg-color);
+            font-weight: bold;
+            z-index: 2;
+        }
+        
+        /* 列悬停效果优化 */
+        .interactive-table tbody:hover td {
+            opacity: 0.7;
+        }
+        
+        .interactive-table tbody td:hover {
+            opacity: 1;
+        }
+        
+        /* 使用更精确的列高亮方法 */
+        .interactive-table {
+            overflow: hidden;
+        }
+        
+        .interactive-table td:hover::before {
+            content: '';
+            position: absolute;
+            top: -500px;
+            bottom: -500px;
+            left: 0;
+            right: 0;
+            background-color: var(--row-hover);
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .chart-container {
+            margin: 40px 0;
+            background-color: rgba(233, 233, 233, 0.05);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .chart {
+            height: 300px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .bar {
+            width: 60px;
+            background-color: var(--accent-color);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .bar:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .bar::after {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .bar:hover::after {
+            opacity: 1;
+        }
+        
+        .bar-label {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        .toggle-section {
+            margin: 30px 0;
+        }
+        
+        .toggle-button {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .toggle-button:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .hidden-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background-color: rgba(233, 233, 233, 0.05);
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .hidden-content.show {
+            max-height: 500px;
+            padding: 20px;
+            border-top: 1px solid rgba(233, 233, 233, 0.1);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(233, 233, 233, 0.2);
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .interactive-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>福建省渔业发展概况</h1>
+        
+        <div class="intro">
+            <p>福建省地处中国东南沿海，东濒台湾海峡，海域辽阔，海域面积约13.6万平方公里，海岸线曲折，全省拥有大陆海岸线3572公里。福建渔业是全省重要的支柱产业之一，海洋捕捞、养殖和水产品加工齐头并进。</p>
+        </div>
+        
+        <div class="data-grid">
+            <div class="data-card">
+                <h3>水产品总产量</h3>
+                <div class="value">854.4<span class="unit">万吨</span></div>
+                <p>2022年数据，同比增长3.5%</p>
+            </div>
+            
+            <div class="data-card">
+                <h3>渔业经济总产值</h3>
+                <div class="value">3000<span class="unit">亿元</span></div>
+                <p>占全国渔业总产值的10%以上</p>
+            </div>
+            
+            <div class="data-card">
+                <h3>海岸线长度</h3>
+                <div class="value">3572<span class="unit">公里</span></div>
+                <p>大陆海岸线长度，全国前列</p>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2>2022年福建省水产品产量构成</h2>
+            <div class="chart">
+                <div class="bar" style="height: 65%;" data-value="550万吨"></div>
+                <div class="bar" style="height: 24%;" data-value="200万吨"></div>
+                <div class="bar" style="height: 12%;" data-value="100万吨"></div>
+            </div>
+            <div style="display: flex; justify-content: space-around;">
+                <div class="bar-label">海水养殖</div>
+                <div class="bar-label">海洋捕捞</div>
+                <div class="bar-label">淡水渔业</div>
+            </div>
+        </div>
+        
+        <h2>福建省主要水产品养殖情况</h2>
+        <table class="interactive-table">
+            <thead>
+                <tr>
+                    <th>品种</th>
+                    <th>主产区</th>
+                    <th>全国占比</th>
+                    <th>特点</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>大黄鱼</td>
+                    <td>宁德市</td>
+                    <td>80%以上</td>
+                    <td>中国最大养殖基地</td>
+                </tr>
+                <tr>
+                    <td>鲍鱼</td>
+                    <td>连江县</td>
+                    <td>领先</td>
+                    <td>养殖规模全国领先</td>
+                </tr>
+                <tr>
+                    <td>海带</td>
+                    <td>霞浦县</td>
+                    <td>领先</td>
+                    <td>养殖规模全国领先</td>
+                </tr>
+                <tr>
+                    <td>紫菜</td>
+                    <td>沿海各县</td>
+                    <td>重要产区</td>
+                    <td>品质优良</td>
+                </tr>
+                <tr>
+                    <td>对虾</td>
+                    <td>全省沿海</td>
+                    <td>重要产区</td>
+                    <td>多种类养殖</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="toggle-section">
+            <button class="toggle-button" onclick="toggleContent('advancements')">+ 查看福建渔业发展成就</button>
+            <div class="hidden-content" id="advancements">
+                <ul>
+                    <li><strong>远洋渔业</strong>：拥有远洋渔船600余艘，作业范围遍及太平洋、印度洋及大西洋，年捕捞量超20万吨</li>
+                    <li><strong>种苗培育</strong>：培育20个国审水产新品种、近百个高产抗逆的水产优良新品系</li>
+                    <li><strong>深远海养殖</strong>：累计投建深远海养殖平台23台套，建设深水大网箱5300余口，规模均居全国第一</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="toggle-section">
+            <button class="toggle-button" onclick="toggleContent('challenges')">+ 查看面临的挑战</button>
+            <div class="hidden-content" id="challenges">
+                <ul>
+                    <li>近海过度捕捞问题</li>
+                    <li>养殖受环境保护规划限制</li>
+                    <li>水产品精深加工比例较低</li>
+                    <li>疫情后国内市场经济疲软</li>
+                    <li>国际市场风险指数大</li>
+                    <li>产业链亟需空间布局和协同发展路径优化</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>数据来源：福建省渔业统计年鉴 | 设计：科普WebMap项目</p>
+    </footer>
+    
+    <script>
+        function toggleContent(id) {
+            const content = document.getElementById(id);
+            content.classList.toggle('show');
+            
+            const button = content.previousElementSibling;
+            if (content.classList.contains('show')) {
+                button.textContent = '- 收起内容';
+            } else {
+                button.textContent = '+ 查看' + button.textContent.substring(button.textContent.indexOf(' '));
+            }
+        }
+        
+        // 添加图表交互效果
+        document.querySelectorAll('.bar').forEach(bar => {
+            bar.addEventListener('mouseenter', function() {
+                const value = this.getAttribute('data-value');
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = value;
+                this.appendChild(tooltip);
+            });
+            
+            bar.addEventListener('mouseleave', function() {
+                const tooltip = this.querySelector('.tooltip');
+                if (tooltip) {
+                    this.removeChild(tooltip);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
