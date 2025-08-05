@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>福建省各地区四链评价指数</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+        
+        :root {
+            --bg-color: #0E1116;
+            --text-color: #E9E9E9;
+            --accent-color: #D26F57;
+            --hover-color: #68A2FF;
+            --row-hover: rgba(104, 162, 255, 0.3);
+            --cell-hover: #68A2FF;
+            --padding: 12px;
+            --chain-innovation: #FF7E79;
+            --chain-value: #A5DE37;
+            --chain-supply: #4DB8FF;
+            --chain-space: #C792EA;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+        
+        .chain-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .chain-tab {
+            padding: 10px 20px;
+            background-color: rgba(233, 233, 233, 0.1);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .chain-tab:hover {
+            transform: translateY(-3px);
+        }
+        
+        .chain-tab.innovation {
+            background-color: var(--chain-innovation);
+            color: var(--bg-color);
+        }
+        
+        .chain-tab.value {
+            background-color: var(--chain-value);
+            color: var(--bg-color);
+        }
+        
+        .chain-tab.supply {
+            background-color: var(--chain-supply);
+            color: var(--bg-color);
+        }
+        
+        .chain-tab.space {
+            background-color: var(--chain-space);
+            color: var(--bg-color);
+        }
+        
+        .chain-tab.active {
+            box-shadow: 0 0 0 2px var(--text-color);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+        
+        .data-table th {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            padding: var(--padding);
+            text-align: center;
+            position: sticky;
+            top: 0;
+        }
+        
+        .data-table td {
+            padding: var(--padding);
+            border-bottom: 1px solid rgba(233, 233, 233, 0.2);
+            text-align: center;
+        }
+        
+        .data-table tr:hover {
+            background-color: var(--row-hover);
+        }
+        
+        .data-table td:hover {
+            background-color: var(--cell-hover);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+        
+        .rank-1 {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .rank-2 {
+            color: #C0C0C0;
+            font-weight: bold;
+        }
+        
+        .rank-3 {
+            color: #CD7F32;
+            font-weight: bold;
+        }
+        
+        .year-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .year-tab {
+            padding: 8px 15px;
+            background-color: rgba(233, 233, 233, 0.1);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: all 0.3s;
+        }
+        
+        .year-tab:hover {
+            background-color: rgba(104, 162, 255, 0.3);
+        }
+        
+        .year-tab.active {
+            background-color: var(--hover-color);
+            color: var(--bg-color);
+            font-weight: bold;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .chain-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .year-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>福建省各地区四链评价指数</h1>
+        
+        <div class="chain-tabs">
+            <button class="chain-tab innovation active" onclick="showChain('innovation')">创新链</button>
+            <button class="chain-tab value" onclick="showChain('value')">价值链</button>
+            <button class="chain-tab supply" onclick="showChain('supply')">供应链</button>
+            <button class="chain-tab space" onclick="showChain('space')">空间链</button>
+        </div>
+        
+        <div class="year-tabs">
+            <button class="year-tab active" onclick="showYear('2013')">2013年</button>
+            <button class="year-tab" onclick="showYear('2015')">2015年</button>
+            <button class="year-tab" onclick="showYear('2017')">2017年</button>
+        </div>
+        
+        <div class="table-container">
+            <!-- 创新链表格 -->
+            <table class="data-table" id="innovationTable">
+                <thead>
+                    <tr>
+                        <th>地区</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>福州</td>
+                        <td>0.042</td>
+                        <td class="rank-2">2</td>
+                        <td>0.078</td>
+                        <td class="rank-2">2</td>
+                        <td>0.112</td>
+                        <td class="rank-2">2</td>
+                    </tr>
+                    <tr>
+                        <td>厦门</td>
+                        <td>0.008</td>
+                        <td>6</td>
+                        <td>0.016</td>
+                        <td>7</td>
+                        <td>0.028</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>莆田</td>
+                        <td>0.024</td>
+                        <td>3</td>
+                        <td>0.027</td>
+                        <td>6</td>
+                        <td>0.050</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>三明</td>
+                        <td>0.006</td>
+                        <td>7</td>
+                        <td>0.010</td>
+                        <td>8</td>
+                        <td>0.012</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>泉州</td>
+                        <td>0.018</td>
+                        <td>5</td>
+                        <td>0.036</td>
+                        <td>4</td>
+                        <td>0.050</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>漳州</td>
+                        <td>0.020</td>
+                        <td>4</td>
+                        <td>0.030</td>
+                        <td>5</td>
+                        <td>0.038</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>南平</td>
+                        <td>0.003</td>
+                        <td>8</td>
+                        <td>0.005</td>
+                        <td>3</td>
+                        <td>0.007</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>龙岩</td>
+                        <td>0.000</td>
+                        <td>9</td>
+                        <td>0.000</td>
+                        <td>9</td>
+                        <td>0.002</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>宁德</td>
+                        <td>0.092</td>
+                        <td class="rank-1">1</td>
+                        <td>0.140</td>
+                        <td class="rank-1">1</td>
+                        <td>0.168</td>
+                        <td class="rank-1">1</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- 价值链表格 -->
+            <table class="data-table" id="valueTable" style="display:none">
+                <thead>
+                    <tr>
+                        <th>地区</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>福州</td>
+                        <td>0.210</td>
+                        <td class="rank-2">2</td>
+                        <td>0.225</td>
+                        <td class="rank-1">1</td>
+                        <td>0.240</td>
+                        <td class="rank-1">1</td>
+                    </tr>
+                    <tr>
+                        <td>厦门</td>
+                        <td>0.180</td>
+                        <td>4</td>
+                        <td>0.185</td>
+                        <td>4</td>
+                        <td>0.190</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>莆田</td>
+                        <td>0.120</td>
+                        <td>6</td>
+                        <td>0.125</td>
+                        <td>5</td>
+                        <td>0.130</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>三明</td>
+                        <td>0.050</td>
+                        <td>7</td>
+                        <td>0.055</td>
+                        <td>6</td>
+                        <td>0.060</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>泉州</td>
+                        <td>0.175</td>
+                        <td>5</td>
+                        <td>0.185</td>
+                        <td>4</td>
+                        <td>0.200</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>漳州</td>
+                        <td>0.205</td>
+                        <td class="rank-1">1</td>
+                        <td>0.210</td>
+                        <td class="rank-2">2</td>
+                        <td>0.225</td>
+                        <td class="rank-2">2</td>
+                    </tr>
+                    <tr>
+                        <td>南平</td>
+                        <td>0.040</td>
+                        <td>8</td>
+                        <td>0.045</td>
+                        <td>7</td>
+                        <td>0.050</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>龙岩</td>
+                        <td>0.030</td>
+                        <td>9</td>
+                        <td>0.035</td>
+                        <td>8</td>
+                        <td>0.040</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td>宁德</td>
+                        <td>0.195</td>
+                        <td class="rank-3">3</td>
+                        <td>0.200</td>
+                        <td class="rank-3">3</td>
+                        <td>0.215</td>
+                        <td class="rank-3">3</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- 供应链表格 -->
+            <table class="data-table" id="supplyTable" style="display:none">
+                <thead>
+                    <tr>
+                        <th>地区</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>福州</td>
+                        <td>0.280</td>
+                        <td class="rank-1">1</td>
+                        <td>0.290</td>
+                        <td class="rank-1">1</td>
+                        <td>0.300</td>
+                        <td class="rank-1">1</td>
+                    </tr>
+                    <tr>
+                        <td>厦门</td>
+                        <td>0.050</td>
+                        <td>9</td>
+                        <td>0.060</td>
+                        <td>9</td>
+                        <td>0.070</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td>莆田</td>
+                        <td>0.150</td>
+                        <td>5</td>
+                        <td>0.160</td>
+                        <td>5</td>
+                        <td>0.170</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>三明</td>
+                        <td>0.080</td>
+                        <td>6</td>
+                        <td>0.090</td>
+                        <td>6</td>
+                        <td>0.100</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>泉州</td>
+                        <td>0.200</td>
+                        <td>4</td>
+                        <td>0.210</td>
+                        <td>4</td>
+                        <td>0.220</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>漳州</td>
+                        <td>0.270</td>
+                        <td class="rank-2">2</td>
+                        <td>0.280</td>
+                        <td class="rank-2">2</td>
+                        <td>0.290</td>
+                        <td class="rank-2">2</td>
+                    </tr>
+                    <tr>
+                        <td>南平</td>
+                        <td>0.070</td>
+                        <td>7</td>
+                        <td>0.080</td>
+                        <td>7</td>
+                        <td>0.090</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>龙岩</td>
+                        <td>0.060</td>
+                        <td>8</td>
+                        <td>0.070</td>
+                        <td>8</td>
+                        <td>0.080</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>宁德</td>
+                        <td>0.250</td>
+                        <td class="rank-3">3</td>
+                        <td>0.260</td>
+                        <td class="rank-3">3</td>
+                        <td>0.270</td>
+                        <td class="rank-3">3</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <!-- 空间链表格 -->
+            <table class="data-table" id="spaceTable" style="display:none">
+                <thead>
+                    <tr>
+                        <th>地区</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                        <th>评价指数</th>
+                        <th>排名</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>福州</td>
+                        <td>0.300</td>
+                        <td class="rank-1">1</td>
+                        <td>0.310</td>
+                        <td class="rank-1">1</td>
+                        <td>0.320</td>
+                        <td class="rank-1">1</td>
+                    </tr>
+                    <tr>
+                        <td>厦门</td>
+                        <td>0.100</td>
+                        <td>6</td>
+                        <td>0.110</td>
+                        <td>6</td>
+                        <td>0.120</td>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <td>莆田</td>
+                        <td>0.180</td>
+                        <td>5</td>
+                        <td>0.190</td>
+                        <td>5</td>
+                        <td>0.200</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>三明</td>
+                        <td>0.070</td>
+                        <td>7</td>
+                        <td>0.080</td>
+                        <td>7</td>
+                        <td>0.090</td>
+                        <td>7</td>
+                    </tr>
+                    <tr>
+                        <td>泉州</td>
+                        <td>0.220</td>
+                        <td>4</td>
+                        <td>0.230</td>
+                        <td>4</td>
+                        <td>0.240</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>漳州</td>
+                        <td>0.280</td>
+                        <td class="rank-3">3</td>
+                        <td>0.290</td>
+                        <td class="rank-3">3</td>
+                        <td>0.300</td>
+                        <td class="rank-3">3</td>
+                    </tr>
+                    <tr>
+                        <td>南平</td>
+                        <td>0.060</td>
+                        <td>8</td>
+                        <td>0.070</td>
+                        <td>8</td>
+                        <td>0.080</td>
+                        <td>8</td>
+                    </tr>
+                    <tr>
+                        <td>龙岩</td>
+                        <td>0.050</td>
+                        <td>9</td>
+                        <td>0.060</td>
+                        <td>9</td>
+                        <td>0.070</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td>宁德</td>
+                        <td>0.290</td>
+                        <td class="rank-2">2</td>
+                        <td>0.300</td>
+                        <td class="rank-2">2</td>
+                        <td>0.310</td>
+                        <td class="rank-2">2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // 显示不同链条的表格
+        function showChain(chain) {
+            // 隐藏所有表格
+            document.querySelectorAll('.data-table').forEach(table => {
+                table.style.display = 'none';
+            });
+            
+            // 显示选中的表格
+            document.getElementById(chain + 'Table').style.display = 'table';
+            
+            // 更新标签状态
+            document.querySelectorAll('.chain-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector('.chain-tab.' + chain).classList.add('active');
+        }
+        
+        // 显示不同年份的数据列
+        function showYear(year) {
+            const columns = {
+                '2013': [1, 2],
+                '2015': [3, 4],
+                '2017': [5, 6]
+            };
+            
+            // 更新标签状态
+            document.querySelectorAll('.year-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 获取当前显示的表格
+            const activeTable = document.querySelector('.data-table[style="display:table"], .data-table:not([style])');
+            
+            // 重置所有列的显示
+            const allCells = activeTable.querySelectorAll('td, th');
+            allCells.forEach(cell => {
+                cell.style.display = '';
+            });
+            
+            // 隐藏非选中年份的列
+            const [indexCol, ...yearCols] = columns[year];
+            const allCols = [1, 2, 3, 4, 5, 6];
+            const colsToHide = allCols.filter(col => !yearCols.includes(col) && col !== indexCol);
+            
+            // 确保地区列(0)和选中年份列可见
+            colsToHide.forEach(col => {
+                const cells = activeTable.querySelectorAll(`tr > *:nth-child(${col + 1})`);
+                cells.forEach(cell => {
+                    cell.style.display = 'none';
+                });
+            });
+        }
+        
+        // 初始化显示2013年数据
+        window.addEventListener('load', () => {
+            showYear('2013');
+        });
+    </script>
+</body>
+</html>
