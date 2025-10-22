@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>植被重要值双方法计算工具</title>
+<style>
+  :root{--bg:#ffffff;--muted:#6b7280;--accent:#1f6f4b}
+  body{font-family: "Microsoft YaHei", Arial, sans-serif; background:#f6f8f9; color:#0b2540; margin:18px; max-width:1100px}
+  header{display:flex;align-items:center;gap:12px}
+  h1{font-size:20px;margin:0;color:var(--accent)}
+  .mode-switch{margin-top:12px}
+  .mode-switch button{padding:8px 12px;margin-right:8px;border-radius:6px;border:none;background:#7f8c8a;color:#fff;cursor:pointer}
+  .mode-switch button.active{background:var(--accent)}
+  .card{background:#fff;border:1px solid #e6eef7;border-radius:8px;padding:12px;margin-top:12px}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+  th,td{border:1px solid #e6eef7;padding:6px;text-align:center}
+  th{background:#f1f6fb}
+  input[type="number"], input[type="text"]{width:100%;box-sizing:border-box;padding:6px;border-radius:4px;border:1px solid #d1dbe6}
+  .row-actions{display:flex;gap:8px;align-items:center}
+  button.action{background:var(--accent);color:#fff;border:none;padding:8px 10px;border-radius:6px;cursor:pointer}
+  button.secondary{background:#6b7280;color:#fff}
+  .muted{color:var(--muted);font-size:13px}
+  .formula{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;background:#fbfbff;padding:8px;border-radius:6px;border:1px dashed #e0e7ef;margin-top:6px}
+  .result-block{margin-top:10px}
+  .history{margin-top:12px}
+  .card-record{border-top:1px dashed #e6eef7;padding:8px 0}
+  footer{margin-top:24px;font-size:12px;color:#6b7280;text-align:center}
+  .flex{display:flex;gap:8px;align-items:center}
+  .right{margin-left:auto}
+  .small{font-size:12px;color:#61707a}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>植被重要值双方法计算工具</h1>
+    <div class="small muted">样方法 & 中点方角法 — 显示公式与代入过程。结果保留两位小数，支持多次记录与 CSV 导出。</div>
+  </div>
+</header>
+
+<div class="mode-switch">
+  <button id="btnSample" class="active" onclick="switchMode('sample')">样方法</button>
+  <button id="btnPoint" onclick="switchMode('point')">中点方角法</button>
+</div>
+
+<!-- 样方法 -->
+<div id="panel-sample" class="card" style="display:block">
+  <strong>样方法（样地面积：600 m²；小样方总数：4；调查最小单位：37.5 m²）</strong>
+  <div class="muted small">输入多行物种数据，点击“计算重要值”。系统将对当前表所有物种一起进行汇总计算，并显示每个物种的公式与代入过程。</div>
+
+  <table id="sampleTable" aria-label="样方法输入表">
+    <thead>
+      <tr><th>种名</th><th>个体数</th><th>树高 (m)</th><th>胸径 DBH (cm)</th><th>冠幅 E-W (m)</th><th>冠幅 N-S (m)</th><th>出现小样方数 (0-4)</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" value="物种A"></td>
+        <td><input type="number" value="10" min="0"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01" value="15"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" value="3" min="0" max="4"></td>
+        <td><button class="secondary" onclick="delRow(this,'sample')">删除</button></td>
+      </tr>
+      <tr>
+        <td><input type="text" value="物种B"></td>
+        <td><input type="number" value="5" min="0"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01" value="12"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" value="2" min="0" max="4"></td>
+        <td><button class="secondary" onclick="delRow(this,'sample')">删除</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row-actions" style="margin-top:8px">
+    <button class="action" onclick="addRow('sample')">＋ 添加物种</button>
+    <button class="action" onclick="computeSample()">计算重要值</button>
+    <div class="right muted">注：若你有胸围(C)，请先在胸径栏换算（DBH = C / π）后输入</div>
+  </div>
+
+  <div id="sampleResult" class="result-block"></div>
+</div>
+
+<!-- 中点方角法 -->
+<div id="panel-point" class="card" style="display:none">
+  <strong>中点方角法（沿样线设置样点，每样点 4 象限，调查每象限最近个体）</strong>
+  <div class="muted small">输入多行物种数据，需在上方输入样点总数；系统对当前表所有物种一起计算相对密度、频度、相对频度、相对显著度与重要值。</div>
+
+  <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+    <label>样点总数：<input id="pointTotal" type="number" value="20" min="1" style="width:100px"></label>
+    <div class="muted small">（例如：20）</div>
+  </div>
+
+  <table id="pointTable" aria-label="中点法输入表">
+    <thead>
+      <tr><th>种名</th><th>个体数</th><th>树高 (m)</th><th>胸径 DBH (cm)</th><th>冠幅 E-W (m)</th><th>冠幅 N-S (m)</th><th>出现样点数</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" value="物种A"></td>
+        <td><input type="number" value="15" min="0"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01" value="18"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" value="8" min="0"></td>
+        <td><button class="secondary" onclick="delRow(this,'point')">删除</button></td>
+      </tr>
+      <tr>
+        <td><input type="text" value="物种B"></td>
+        <td><input type="number" value="7" min="0"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01" value="10"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" step="0.01"></td>
+        <td><input type="number" value="5" min="0"></td>
+        <td><button class="secondary" onclick="delRow(this,'point')">删除</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row-actions" style="margin-top:8px">
+    <button class="action" onclick="addRow('point')">＋ 添加物种</button>
+    <button class="action" onclick="computePoint()">计算重要值</button>
+    <div class="right muted">注意：相对密度按物种总个体数占比计算；频度按“出现样点数/样点总数”。</div>
+  </div>
+
+  <div id="pointResult" class="result-block"></div>
+</div>
+
+<!-- 记录区与导出 -->
+<div class="card history">
+  <div style="display:flex;align-items:center">
+    <strong>📘 数据记录区</strong>
+    <div class="right">
+      <button class="secondary" onclick="clearRecords()">清空记录</button>
+      <button class="action" onclick="exportAllCSV()">导出全部记录 (CSV)</button>
+    </div>
+  </div>
+  <div id="historyArea" style="margin-top:8px"></div>
+</div>
+
+<footer>© 2025 faust | 植被重要值双方法计算工具</footer>
+
+<script>
+/* ---- 工具函数 ---- */
+function round2(x){ return Math.round((x+1e-12)*100)/100; } // 两位小数
+function fmt(x){ return round2(x).toFixed(2); }
+function el(tag, html){ const e=document.createElement(tag); e.innerHTML=html; return e; }
+
+/* ---- 模式切换 ---- */
+function switchMode(mode){
+  document.getElementById('panel-sample').style.display = mode==='sample' ? 'block' : 'none';
+  document.getElementById('panel-point').style.display = mode==='point' ? 'block' : 'none';
+  document.getElementById('btnSample').classList.toggle('active', mode==='sample');
+  document.getElementById('btnPoint').classList.toggle('active', mode==='point');
+}
+
+/* ---- 表格行操作 ---- */
+function addRow(kind){
+  const table = kind==='sample' ? document.getElementById('sampleTable') : document.getElementById('pointTable');
+  const tr = table.tBodies[0].insertRow();
+  tr.innerHTML = `<td><input type="text"></td>
+    <td><input type="number" value="0" min="0"></td>
+    <td><input type="number" step="0.01"></td>
+    <td><input type="number" step="0.01"></td>
+    <td><input type="number" step="0.01"></td>
+    <td><input type="number" step="0.01"></td>
+    <td><input type="number" value="0" min="0"></td>
+    <td><button class="secondary" onclick="delRow(this,'${kind}')">删除</button></td>`;
+}
+function delRow(btn, kind){
+  const tr = btn.closest('tr');
+  tr.parentNode.removeChild(tr);
+}
+
+/* ---- 记录管理 ---- */
+let records = []; // 每个记录为对象 {method, time, detailHTML, csvRow...}
+function appendRecord(obj){
+  records.push(obj);
+  renderHistory();
+}
+function renderHistory(){
+  const area = document.getElementById('historyArea');
+  area.innerHTML = '';
+  records.forEach((r,i)=>{
+    const card = document.createElement('div');
+    card.className='card-record';
+    card.innerHTML = `<div style="display:flex;align-items:center;gap:8px">
+      <strong>#${i+1} ${r.method}</strong>
+      <div class="muted small">${r.time}</div>
+      <div class="right"><button class="secondary" onclick="removeRecord(${i})">删除</button></div>
+    </div>
+    <div style="margin-top:8px">${r.detailHTML}</div>`;
+    area.appendChild(card);
+  });
+}
+function removeRecord(i){ records.splice(i,1); renderHistory(); }
+function clearRecords(){ if(!confirm('清空所有记录？')) return; records=[]; renderHistory(); }
+
+/* ---- CSV 导出 ---- */
+function exportAllCSV(){
+  if(records.length===0){ alert('无记录可导出'); return; }
+  // CSV header
+  const header = ['方法','时间','种名','相对密度(%)','相对显著度(%)','相对频度(%)','重要值'];
+  const lines = [header.join(',')];
+  records.forEach(r=>{
+    // r.csvRows can be an array for multiple species per calculation; each row: [method,time,name,relD,relS,relF,IV]
+    r.csvRows.forEach(row => lines.push(row.map(v=>''+v).join(',')));
+  });
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '植被重要值记录.csv';
+  a.click();
+}
+
+/* ---- 计算：样方法 ----
+   公式（为每个物种）：
+   密度 = n / 600
+   相对密度(%) = (该种密度 / 所有种密度之和) ×100%
+   单株胸高断面积 = π × (DBH/2 /100)^2  (m^2)
+   胸高断面积和 = 单株 × 个体数
+   显著度 = (胸高断面积和) / 600
+   相对显著度(%) = (该种胸高断面积和 / 所有种胸高断面积和) ×100%
+   频度(%) = 出现小样方数 / 4 ×100%
+   相对频度(%) = 该种频度 / 所有种频度之和 ×100%
+   重要值 = 相对密度 + 相对显著度 + 相对频度
+*/
+function computeSample(){
+  const AREA = 600;
+  const PLOTS = 4;
+  const rows = Array.from(document.querySelectorAll('#sampleTable tbody tr'));
+  // parse species
+  const species = [];
+  for(const r of rows){
+    const inputs = r.querySelectorAll('input');
+    const name = inputs[0].value.trim();
+    if(!name) continue;
+    const n = Number(inputs[1].value) || 0;
+    const h = inputs[2].value ? Number(inputs[2].value) : null;
+    const dbh = Number(inputs[3].value) || 0; // cm
+    const ew = inputs[4].value ? Number(inputs[4].value) : null;
+    const ns = inputs[5].value ? Number(inputs[5].value) : null;
+    let plots = Number(inputs[6].value) || 0;
+    if(plots < 0) plots = 0; if(plots > PLOTS) plots = PLOTS;
+    // basal area per individual (m^2)
+    const r_m = (dbh/2)/100.0;
+    const basal_ind = Math.PI * r_m * r_m;
+    const basal_sum = basal_ind * n;
+    species.push({name,n,h,dbh,ew,ns,plots,basal_ind,basal_sum});
+  }
+  if(species.length===0){ alert('请先输入至少一个物种（带种名）'); return; }
+
+  // totals
+  const totalDensity = species.reduce((s,sp)=>s + sp.n / AREA, 0);
+  const totalBasalSum = species.reduce((s,sp)=>s + sp.basal_sum, 0);
+  const totalFreq = species.reduce((s,sp)=>s + (sp.plots / PLOTS * 100), 0);
+
+  // build result HTML and CSV rows
+  let detailHTML = '';
+  const csvRows = [];
+
+  // table header
+  detailHTML += `<table><thead><tr><th>种名</th><th>密度(个/m²)</th><th>相对密度(%)</th><th>胸断面积和(m²)</th><th>相对显著度(%)</th><th>频度(%)</th><th>相对频度(%)</th><th>重要值</th></tr></thead><tbody>`;
+
+  for(const sp of species){
+    const density = sp.n / AREA;
+    const relDensity = totalDensity > 0 ? (density / totalDensity * 100) : 0;
+    const sig = sp.basal_sum / AREA; // 显著度
+    const relSig = totalBasalSum > 0 ? (sp.basal_sum / totalBasalSum * 100) : 0;
+    const freq = (sp.plots / PLOTS) * 100;
+    const relFreq = totalFreq > 0 ? (freq / totalFreq * 100) : 0;
+    const IV = relDensity + relSig + relFreq;
+
+    // table row
+    detailHTML += `<tr>
+      <td>${sp.name}</td>
+      <td>${round2(density).toFixed(4)}</td>
+      <td>${fmt(relDensity)}</td>
+      <td>${round2(sp.basal_sum).toFixed(4)}</td>
+      <td>${fmt(relSig)}</td>
+      <td>${fmt(freq)}</td>
+      <td>${fmt(relFreq)}</td>
+      <td>${fmt(IV)}</td>
+    </tr>`;
+
+    // formula block (formula -> 代入 -> 结果)
+    detailHTML += `<tr><td colspan="8">
+      <div class="formula">
+        <strong>${sp.name} 计算过程：</strong><br>
+        1) 密度 = ${sp.n} / ${AREA} = ${round2(density).toFixed(4)} (个/m²)<br>
+        2) 相对密度 = (${round2(density).toFixed(4)} / ${round2(totalDensity).toFixed(4)}) × 100% = ${fmt(relDensity)}%<br>
+        3) 单株胸高断面积 = π × (DBH/2 /100)^2 = π × (${sp.dbh}/2 ÷100)^2 = ${round2(sp.basal_ind).toFixed(4)} m²<br>
+        4) 胸高断面积和 = 单株 × 个体数 = ${round2(sp.basal_ind).toFixed(4)} × ${sp.n} = ${round2(sp.basal_sum).toFixed(4)} m²<br>
+        5) 显著度 = ${round2(sp.basal_sum).toFixed(4)} / ${AREA} = ${round2(sig).toFixed(4)}<br>
+        6) 相对显著度 = (${round2(sp.basal_sum).toFixed(4)} / ${round2(totalBasalSum).toFixed(4)}) × 100% = ${fmt(relSig)}%<br>
+        7) 频度 = (${sp.plots} / ${PLOTS}) ×100% = ${fmt(freq)}%<br>
+        8) 相对频度 = (${fmt(freq)} / ${fmt(totalFreq)}) × 100% = ${fmt(relFreq)}%<br>
+        9) 重要值 = ${fmt(relDensity)} + ${fmt(relSig)} + ${fmt(relFreq)} = ${fmt(IV)}
+      </div>
+    </td></tr>`;
+
+    // csv row
+    csvRows.push(['样方法', new Date().toLocaleString(), sp.name, fmt(relDensity), fmt(relSig), fmt(relFreq), fmt(IV)]);
+  }
+
+  detailHTML += '</tbody></table>';
+
+  // display & record
+  document.getElementById('sampleResult').innerHTML = detailHTML;
+  appendRecord({method:'样方法', time: new Date().toLocaleString(), detailHTML, csvRows});
+}
+
+/* ---- 计算：中点方角法 ----
+   公式（为每个物种）：
+   相对密度(%) = (该种总个体数 / 所有种总个体数) × 100%
+   频度 = 出现样点数 / 样点总数 ×100%  （显示为 %）
+   相对频度(%) = 该种频度 / 所有种频度之和 × 100%
+   相对显著度(%) = 该种胸断面积和 / 所有种胸断面积和 ×100%
+   重要值 = 相对密度 + 相对显著度 + 相对频度
+*/
+function computePoint(){
+  const totalPoints = Number(document.getElementById('pointTotal').value) || 1;
+  const rows = Array.from(document.querySelectorAll('#pointTable tbody tr'));
+  const species = [];
+  for(const r of rows){
+    const inputs = r.querySelectorAll('input');
+    const name = inputs[0].value.trim();
+    if(!name) continue;
+    const n = Number(inputs[1].value) || 0;
+    const h = inputs[2].value ? Number(inputs[2].value) : null;
+    const dbh = Number(inputs[3].value) || 0;
+    const ew = inputs[4].value ? Number(inputs[4].value) : null;
+    const ns = inputs[5].value ? Number(inputs[5].value) : null;
+    const appear = Number(inputs[6].value) || 0;
+    const r_m = (dbh/2)/100.0;
+    const basal_ind = Math.PI * r_m * r_m;
+    const basal_sum = basal_ind * n;
+    species.push({name,n,h,dbh,ew,ns,appear,basal_ind,basal_sum});
+  }
+  if(species.length===0){ alert('请先输入至少一个物种（带种名）'); return; }
+
+  const totalIndividuals = species.reduce((s,sp)=>s+sp.n,0);
+  const totalBasalSum = species.reduce((s,sp)=>s+sp.basal_sum,0);
+  const totalFreqPercentSum = species.reduce((s,sp)=>s + (sp.appear / totalPoints * 100), 0);
+
+  // build result
+  let detailHTML = '';
+  const csvRows = [];
+  detailHTML += `<table><thead><tr><th>种名</th><th>相对密度(%)</th><th>胸断面积和(m²)</th><th>相对显著度(%)</th><th>频度(%)</th><th>相对频度(%)</th><th>重要值</th></tr></thead><tbody>`;
+
+  for(const sp of species){
+    const relDensity = totalIndividuals>0 ? (sp.n / totalIndividuals * 100) : 0;
+    const relSig = totalBasalSum>0 ? (sp.basal_sum / totalBasalSum * 100) : 0;
+    const freq = (sp.appear / totalPoints) * 100;
+    const relFreq = totalFreqPercentSum>0 ? (freq / totalFreqPercentSum * 100) : 0;
+    const IV = relDensity + relSig + relFreq;
+
+    detailHTML += `<tr>
+      <td>${sp.name}</td>
+      <td>${fmt(relDensity)}</td>
+      <td>${round2(sp.basal_sum).toFixed(4)}</td>
+      <td>${fmt(relSig)}</td>
+      <td>${fmt(freq)}</td>
+      <td>${fmt(relFreq)}</td>
+      <td>${fmt(IV)}</td>
+    </tr>`;
+
+    detailHTML += `<tr><td colspan="7">
+      <div class="formula">
+        <strong>${sp.name} 计算过程（中点方角法）：</strong><br>
+        1) 相对密度 = (${sp.n} / ${totalIndividuals}) ×100% = ${fmt(relDensity)}%<br>
+        2) 胸断面积和 = 单株 ${round2(sp.basal_ind).toFixed(4)} × ${sp.n} = ${round2(sp.basal_sum).toFixed(4)} m²<br>
+        3) 相对显著度 = (${round2(sp.basal_sum).toFixed(4)} / ${round2(totalBasalSum).toFixed(4)}) ×100% = ${fmt(relSig)}%<br>
+        4) 频度 = (${sp.appear} / ${totalPoints}) ×100% = ${fmt(freq)}%<br>
+        5) 相对频度 = (${fmt(freq)} / ${fmt(totalFreqPercentSum)}) ×100% = ${fmt(relFreq)}%<br>
+        6) 重要值 = ${fmt(relDensity)} + ${fmt(relSig)} + ${fmt(relFreq)} = ${fmt(IV)}
+      </div>
+    </td></tr>`;
+
+    csvRows.push(['中点方角法', new Date().toLocaleString(), sp.name, fmt(relDensity), fmt(relSig), fmt(relFreq), fmt(IV)]);
+  }
+
+  detailHTML += '</tbody></table>';
+  document.getElementById('pointResult').innerHTML = detailHTML;
+  appendRecord({method:'中点方角法', time: new Date().toLocaleString(), detailHTML, csvRows});
+}
+
+/* ---- 页面初始化: 防止误操作 ---- */
+document.addEventListener('DOMContentLoaded', ()=>{ renderHistory(); });
+</script>
+</body>
+</html>
